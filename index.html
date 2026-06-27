@@ -19,7 +19,7 @@
                 const render = (filter = "") => {
                     list.innerHTML = data.filter(i =>
                         i.phone.includes(filter) ||
-                        (i.name && i.name.includes(filter))
+                        (i.name && i.name.includes(filter) || (i.prof && i.prof.includes(filter)))
                     )
                     .map(i => `<div class="border-b py-3">
                         <p class="font-bold">${i.name || 'בעל מקצוע'}</p>
