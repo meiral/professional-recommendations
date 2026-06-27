@@ -2,29 +2,35 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>?????? ??????</title>
+    <title>המלצות הקהילה</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 p-5">
     <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-4">???? ????? ???????</h1>
-        <input type="text" id="search" placeholder="?? ??? ??? ?????..." class="w-full p-2 border rounded mb-4">
+        <h1 class="text-2xl font-bold mb-4">בעלי מקצוע מומלצים</h1>
+        <input type="text" id="search" placeholder="🔍 חפש בעל מקצוע..." class="w-full p-2 border rounded mb-4">
         <div id="list"></div>
     </div>
     <script>
-        fetch('data.json').then(r => r.blob()).then(blob => blob.text()).then(text => JSON.parse(text)).then(data => {
-            const list = document.getElementById('list');
-            const render = (filter = "") => {
-                list.innerHTML = data.filter(i => i.phone.includes(filter) || i.recs.toString().includes(filter))
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('list');
+                const render = (filter = "") => {
+                    list.innerHTML = data.filter(i =>
+                        i.phone.includes(filter) ||
+                        (i.name && i.name.includes(filter))
+                    )
                     .map(i => `<div class="border-b py-3">
-                        <p class="font-bold">??? ?????</p>
-                        <p class="text-blue-600">${i.phone}</p>
-                        <p class="text-sm text-gray-500">?? ????? ${i.recs} ?????</p>
+                        <p class="font-bold">${i.name || 'בעל מקצוע'}</p>
+                        <p class="text-blue-600 font-mono">${i.phone}</p>
+                        <p class="text-sm text-gray-500">🔁 הומלץ ${i.recs} פעמים</p>
                     </div>`).join('');
-            };
-            document.getElementById('search').addEventListener('input', (e) => render(e.target.value));
-            render();
-        });
+                };
+                document.getElementById('search').addEventListener('input', (e) => render(e.target.value));
+                render();
+            })
+            .catch(err => console.error("Error loading data:", err));
     </script>
 </body>
 </html>
