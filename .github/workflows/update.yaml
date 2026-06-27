@@ -1,17 +1,27 @@
-name: Update
-on: [push]
+name: Update Recommendations
+on:
+  push:
+    paths:
+      - '_chat.txt'
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: contents: write
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
-      - run: python script.py
-      - name: Debug and Push
+        with:
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Run Parser
+        run: python script.py
+      - name: Commit and push changes
         run: |
-          ls -la  # זה יראה לנו בלוג אם data.json נוצר
-          git config --global user.name 'bot'
-          git config --global user.email 'bot@bot.com'
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add data.json
-          git commit -m "Update" || echo "Nothing to commit"
-          git push
+          git commit -m "Auto-update data.json" || echo "No changes to commit"
+          git push origin main
