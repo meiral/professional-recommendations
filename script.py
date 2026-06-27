@@ -1,26 +1,24 @@
 import re, json, os
-from collections import Counter
 
 def update():
-    file_name = '_chat.txt'
-    with open(file_name, 'r', encoding='utf-8') as f:
+    file_path = '_chat.txt'
+    if not os.path.exists(file_path):
+        print("Error: _chat.txt not found!")
+        return
+
+    with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # חיפוש גמיש יותר: מחפש כל רצף של 10 ספרות שמתחיל ב-05
-    # זה יתפוס גם אם יש רווחים או מקפים משונים
+    # חיפוש טלפונים
     phones = re.findall(r'05\d[\s\-]?\d{3}[\s\-]?\d{4}', content)
-
-    # ניקוי המספרים מרווחים ומקפים כדי שיהיה אחיד
-    clean_phones = [re.sub(r'[\s\-]', '', p) for p in phones]
-
-    print(f"Found {len(clean_phones)} numbers: {clean_phones}")
-
-    counts = Counter(clean_phones)
-    results = [{"phone": p, "recs": c} for p, c in counts.items()]
+    # יצירת קובץ JSON פשוט
+    data = [{"phone": p, "recs": 1} for p in phones]
 
     with open('data.json', 'w', encoding='utf-8') as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
-    print("data.json created successfully.")
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+    print(f"DEBUG: Successfully wrote {len(data)} items to data.json")
+    print(f"DEBUG: File exists: {os.path.exists('data.json')}")
 
 if __name__ == "__main__":
     update()
