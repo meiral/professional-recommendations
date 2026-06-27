@@ -1,0 +1,14 @@
+name: Update
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: python script.py
+      - run: |
+          git config --global user.name 'Bot'
+          git config --global user.email 'bot@bot.com'
+          git add data.json
+          git commit -m "Update data" || exit 0
+          git push
