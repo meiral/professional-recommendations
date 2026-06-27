@@ -1,39 +1,26 @@
-import re
-import json
+import re, json, os
 from collections import Counter
 
-def update_data():
-    # פתיחת קובץ הוואטסאפ בקידוד UTF-8
-    try:
-        with open('_chat.txt', 'r', encoding='utf-8') as f:
-            content = f.read()
-    except FileNotFoundError:
-        print("קובץ _chat.txt לא נמצא!")
+def update():
+    # הדפסה שתראה לנו בלוג מה הסקריפט באמת רואה
+    print(f"Current directory: {os.getcwd()}")
+    print(f"Files in directory: {os.listdir('.')}")
+
+    file_name = '_chat.txt'
+    if not os.path.exists(file_name):
+        print(f"ERROR: {file_name} not found!")
         return
 
-    # זיהוי מספרי טלפון ישראליים
-    phone_pattern = r'05\d-?\d{7}'
-    phones = re.findall(phone_pattern, content)
+    with open(file_name, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    phones = re.findall(r'05\d-?\d{7}', content)
     counts = Counter(phones)
+    results = [{"phone": p, "recs": c} for p, c in counts.items()]
 
-    # יצירת רשימת תוצאות
-    results = []
-    for phone, count in counts.items():
-        if count >= 1: # הצג את כולם, גם אם הומלצו פעם אחת
-            results.append({
-                "name": "בעל מקצוע",
-                "phone": phone.replace('-', ''),
-                "recs": count
-            })
-
-    # מיון לפי כמות המלצות (מהגבוה לנמוך)
-    results.sort(key=lambda x: x['recs'], reverse=True)
-
-    # שמירה ל-JSON בפורמט UTF-8
     with open('data.json', 'w', encoding='utf-8') as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
-
-    print("קובץ data.json עודכן בהצלחה!")
+    print("data.json created successfully.")
 
 if __name__ == "__main__":
-    update_data()
+    update()
