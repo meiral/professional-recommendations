@@ -1,8 +1,17 @@
 name: Update
 on: [push]
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+    permissions: contents: write
     steps:
-      - name: Say Hello
-        run: echo "Hello! The Action is working."
+      - uses: actions/checkout@v3
+      - run: python script.py
+      - name: Debug and Push
+        run: |
+          ls -la  # זה יראה לנו בלוג אם data.json נוצר
+          git config --global user.name 'bot'
+          git config --global user.email 'bot@bot.com'
+          git add data.json
+          git commit -m "Update" || echo "Nothing to commit"
+          git push
